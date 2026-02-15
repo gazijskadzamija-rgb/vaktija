@@ -4,15 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vaktija Srebrenik</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
 
 <style>
 :root{
- --bg:#0b0b0d;
- --fg:#ffffff;
- --accent:#d4af37;
- --muted:#b9bcc2;
- --card:#141418;
- --border:#2a2a2f;
+ --bg:#061a14;
+ --panel:#0c2b22;
+ --gold:#d4af37;
+ --gold-soft:#b8962e;
+ --white:#f5f5f5;
+ --soft:#cfd8dc;
+ --border:rgba(212,175,55,0.4);
+ --fg:#f5f5f5;          /* 👈 DODAJ */
+ --accent:#00ff99;      /* 👈 DODAJ (LED zelena) */
 }
 
 *{box-sizing:border-box}
@@ -20,7 +24,7 @@
 html,body{
  height:100%;
  margin:0;
- background:var(--bg);
+ background: radial-gradient(circle at top, #0f3b2e 0%, #061a14 60%);
  color:var(--fg);
  font-family:Arial,Helvetica,sans-serif;
  overflow:hidden;
@@ -29,43 +33,96 @@ html,body{
 body{
  display:flex;
  justify-content:center;
+ align-items:center;   /* 👈 OVO FALI */
 }
+
 
 .wrap{
  width:100%;
- min-height:70vh;
- padding:40px;
+ height:100vh;
+ padding:20px;
  display:flex;
  flex-direction:column;
+ justify-content:space-between;
+
+ background:
+   radial-gradient(circle at 50% 0%, rgba(0,255,150,0.08), transparent 60%);
 }
 
 .header{
- position:relative;
- text-align:center;
+ width:100%;
  margin-bottom:20px;
 }
 
+.header-top{
+ display:grid;
+ grid-template-columns:auto 1fr auto;
+ align-items:center;
+ gap:20px;
+ width:100%;
+ text-transform:uppercase;
+ text-shadow:
+ 0 0 10px rgba(212,175,55,0.8),
+ 0 0 30px rgba(212,175,55,0.6),
+ 0 0 60px rgba(212,175,55,0.4);
+ 
+
+}
+
 .logo{
- position:absolute;
- top:0;
- left:0;
- height:200px;
-}
-
-.logo-right{
-  position:absolute;
-  top:0;
-  right:0;
-  height:200px;
-}
-
-.titles{
- text-align:center;
+ height:clamp(60px, 8vw, 140px);
 }
 
 .title{
- font-size:clamp(24px, 4vw, 70px);
- color:var(--muted);
+ font-size:clamp(28px,4vw,70px);
+ color:var(--gold);
+ letter-spacing:3px;
+ font-weight:700;
+ text-align:center;   /* 👈 DODAJ OVO */
+
+ text-shadow:
+   0 0 10px rgba(212,175,55,0.6),
+   0 0 30px rgba(212,175,55,0.4);
+}
+
+.ornament{
+ position:relative;
+ width:70%;
+ margin:20px auto 0 auto;
+ height:30px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+}
+
+.ornament::before,
+.ornament::after{
+ content:"";
+ flex:1;
+ height:3px;
+ margin:0 15px;
+ border-radius:10px;
+
+ background:linear-gradient(
+   90deg,
+   transparent,
+   var(--gold),
+   var(--gold-soft),
+   var(--gold),
+   transparent
+ );
+
+ box-shadow:
+   0 0 10px rgba(212,175,55,0.8),
+   0 0 25px rgba(212,175,55,0.4);
+}
+
+.ornament-symbol{
+ font-size:50px;
+ color:var(--gold);
+ text-shadow:
+   0 0 8px rgba(212,175,55,0.8),
+   0 0 20px rgba(212,175,55,0.5);
 }
 
 .dates{
@@ -82,30 +139,39 @@ body{
 }
 
 .clock{
- font-size:clamp(40px, 8vw, 200px);
- font-weight:800;
- margin-top:5px;
+ font-size:clamp(50px,8vw,140px);
+ font-weight:900;
+ color:#ffffff;
+ text-align:center;
+ letter-spacing:5px;
+ font-family: 'Orbitron', sans-serif;
+
+ text-shadow:
+ 0 0 10px rgba(212,175,55,0.8),
+ 0 0 30px rgba(212,175,55,0.6),
+ 0 0 60px rgba(212,175,55,0.4);
+
+
 }
 
 .grid{
  flex:1;
  display:grid;
  grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
- gap:25px;
+ gap:15px;
  align-content:center;
 }
 
 .card{
- padding:50px;
+ background:linear-gradient(145deg,#0c2b22,#081f19);
+ border:2px solid var(--border);
  border-radius:20px;
- background:rgba(255,255,255,0.05);
- backdrop-filter:blur(5px);
- border:1px solid rgba(212,175,55,0.4);
+ padding:clamp(18px,2vw,30px);
  text-align:center;
- display:flex;
- flex-direction:column;
- justify-content:center;
- box-shadow:0 0 30px rgba(0,0,0,0.3);
+ box-shadow:
+   0 0 20px rgba(0,0,0,0.6),
+   inset 0 0 15px rgba(0,0,0,0.4);
+ transition:all 0.4s ease;
 }
 
 .card.active{
@@ -115,17 +181,39 @@ body{
  z-index:2;
 }
 
-.current{
- border:6px solid var(--accent);
+.card.active{
+ transform:scale(1.08);
+ border:3px solid var(--gold);
+ box-shadow:
+   0 0 40px rgba(212,175,55,0.8),
+   inset 0 0 20px rgba(212,175,55,0.4);
+}
+
+.card.current{
+ border:4px solid var(--gold);
+ box-shadow:
+   0 0 15px rgba(212,175,55,0.7),
+   0 0 40px rgba(212,175,55,0.4),
+   inset 0 0 20px rgba(212,175,55,0.2);
 }
 
 .name{
- font-size:clamp(18px, 2.5vw, 41px);
+ font-size:clamp(18px,2vw,36px);
+ color:var(--gold);
+ font-weight:700;
+ letter-spacing:1px;
+ margin-bottom:10px;
 }
 
 .time{
- font-size:clamp(30px, 6vw, 90px);
- font-weight:bold;
+ font-size:clamp(35px,5vw,95px);
+ font-weight:900;
+ color:var(--white);
+ text-shadow:0 0 15px rgba(255,255,255,0.3);
+.time{
+ font-family: 'Orbitron', sans-serif;
+}
+
 }
 
 .countdown{
@@ -146,7 +234,7 @@ body{
 }
 
 .hadis{
- font-size:clamp(18px, 3vw, 42px);
+ font-size:clamp(18px, 3vw, 62px);
   font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-style:Italic;
   font-weight:500;
@@ -156,20 +244,17 @@ body{
   transition:opacity 1s ease;
 }
 
-.hadis-source{
-  margin-top:12px;
-  font-size:42px;
-  color:#d4af37;   /* ostaje zlatna za izvor */
-  letter-spacing:1px;
-  font-weight:600;
+.hadis{
+ font-size:clamp(18px,2.5vw,36px);
+ text-align:center;
+ color:var(--soft);
+ margin-top:20px;
+ padding:15px;
+ border-top:1px solid var(--border);
+ letter-spacing:1px;
 }
 
 @media (max-width:768px){
-
- .logo,
- .logo-right{
-  height:80px;
- }
 
  .wrap{
   padding:20px;
@@ -180,42 +265,57 @@ body{
   gap:5px;
  }
 
+}
+
 @keyframes flash{
- 0%{background:#0f3b2e;}
- 50%{background:#1e6b4f;}
- 100%{background:#0f3b2e;}
+ 0%{
+   box-shadow:0 0 20px #00ff99;
+ }
+ 50%{
+   box-shadow:0 0 80px #00ff99;
+ }
+ 100%{
+   box-shadow:0 0 20px #00ff99;
+ }
 }
 
 .card.started{
  animation:flash 1s infinite;
- border:3px solid #00ff88;
+ border:4px solid #00ff99;
 }
 
-
+.card.started{
+ animation:flash 1s infinite;
+ border:3px solid #00ff99;
 }
 
 </style>
 </head>
-
 <body>
 
 <div class="wrap">
 
 <div class="header">
 
-<img src="Logo_IZ_BiH.png" class="logo">
-<img src="logo_MIZS.png" class="logo-right">
-
-<div class="titles">
-  <div class="title">Gazijska džamija Kiseljak</div>
+  <div class="header-top">
+  <img src="Logo_IZ_BiH.png" class="logo">
+  <div>
+    <div class="title">Gazijska džamija Kiseljak</div>
+   <div class="ornament">
+  <span class="ornament-symbol">۞</span>
 </div>
 
-<div class="dates">
- <div id="greg" class="greg"></div>
- <div id="hijri" class="hijri"></div>
+  </div>
+  <img src="logo_MIZS.png" class="logo">
 </div>
 
-<div id="clock" class="clock">--:--:--</div>
+
+  <div class="dates">
+    <div id="greg" class="greg"></div>
+    <div id="hijri" class="hijri"></div>
+  </div>
+
+  <div id="clock" class="clock">--:--:--</div>
 
 </div>
 
@@ -846,11 +946,9 @@ function playBeep(){
  tone(700, now + 0.7, 0.8);
 }
 
-
 buildGrid();
 update();
 setInterval(update,1000);
-setTimeout(playBeep, 2000);
 </script>
 
 </body>
