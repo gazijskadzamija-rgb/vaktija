@@ -162,6 +162,7 @@ body{
 .test-controls{
   display:flex;
   justify-content:center;
+  align-items:center;
   gap:25px;
   margin:25px 0 10px 0;
 }
@@ -185,14 +186,10 @@ body{
   box-shadow:0 0 15px #00ff99;
 }
 
-.test-controls button{
-  font-size:18px;
-  padding:10px 20px;
-  background:#0c2b22;
-  color:#00ff99;
-  border:2px solid #00ff99;
-  border-radius:8px;
-  cursor:pointer;
+#muteBtn{
+  font-size:20px;
+  padding:10px 16px;
+  border-radius:50%;
 }
 
 .card{
@@ -348,6 +345,13 @@ body{
 
 }
 
+#muteBtn.muted{
+  border-color:red;
+  color:red;
+  box-shadow:0 0 15px red;
+}
+
+
 
 </style>
 </head>
@@ -383,6 +387,7 @@ body{
 </div>
 <div class="test-controls">
   <button onclick="playEzan('Sabah')">EZAN ZA SABAH</button>
+  <button id="muteBtn" onclick="toggleMute()">🔊</button> 
   <button onclick="playEzan('Podne')">EZAN OSTALI</button>
 </div>
 
@@ -794,16 +799,35 @@ function playEzan(vakatName){
 
   if(isMuted) return;
 
-  let audio;
+  const regular = document.getElementById("ezanRegular");
+  const sabah = document.getElementById("ezanSabah");
 
-  if(vakatName === "Sabah"){
-    audio = document.getElementById("ezanSabah");
-  } else {
-    audio = document.getElementById("ezanRegular");
-  }
+  regular.pause();
+  sabah.pause();
 
-  audio.currentTime = 0;
+  regular.currentTime = 0;
+  sabah.currentTime = 0;
+
+  const audio = vakatName === "Sabah" ? sabah : regular;
+
   audio.play().catch(()=>{});
+}
+
+function toggleMute(){
+
+  isMuted = !isMuted;
+
+  const btn = document.getElementById("muteBtn");
+
+  btn.classList.toggle("muted");
+
+  if(isMuted){
+    btn.innerText = "🔇";
+    document.getElementById("ezanRegular").pause();
+    document.getElementById("ezanSabah").pause();
+  } else {
+    btn.innerText = "🔊";
+  }
 }
 
 function pad(n){return n.toString().padStart(2,"0");}
@@ -973,7 +997,7 @@ function update(){
   cards[idx].classList.add("current");
  }
 
- let diff=Math.max(0, Math.floor((next.date-now)/1000));
+ let diff = Math.floor((next.date-now)/1000);
 
   // 🔔 Kad nastupi vakat (tačno u sekundi)
 if(diff <= 0 && lastPlayed !== next.name){
@@ -994,6 +1018,7 @@ if(diff > 300){
   });
 }
 
+ diff = Math.max(0, diff);
 
  let h=Math.floor(diff/3600);
  let m=Math.floor((diff%3600)/60);
