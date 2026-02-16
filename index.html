@@ -159,6 +159,42 @@ body{
  align-content:center;
 }
 
+.test-controls{
+  display:flex;
+  justify-content:center;
+  gap:25px;
+  margin:25px 0 10px 0;
+}
+
+.test-controls button{
+  font-family: 'Orbitron', sans-serif;
+  font-size:16px;
+  padding:10px 22px;
+  background:transparent;
+  color:#00ff99;
+  border:2px solid #00ff99;
+  border-radius:8px;
+  cursor:pointer;
+  letter-spacing:1px;
+  transition:all 0.3s ease;
+}
+
+.test-controls button:hover{
+  background:#00ff99;
+  color:#021a14;
+  box-shadow:0 0 15px #00ff99;
+}
+
+.test-controls button{
+  font-size:18px;
+  padding:10px 20px;
+  background:#0c2b22;
+  color:#00ff99;
+  border:2px solid #00ff99;
+  border-radius:8px;
+  cursor:pointer;
+}
+
 .card{
  background:linear-gradient(145deg,#0c2b22,#081f19);
  border:2px solid var(--border);
@@ -170,13 +206,14 @@ body{
    inset 0 0 15px rgba(0,0,0,0.4);
  transition:all 0.4s ease;
  overflow:visible;
+
 }
 
 .card.active{
  transform:scale(1.08);
  border:3px solid var(--gold);
  box-shadow:
-   0 0 30px rgba(212,175,55,0.8),
+   0 0 40px rgba(212,175,55,0.8),
    inset 0 0 20px rgba(212,175,55,0.4);
 }
 
@@ -197,7 +234,7 @@ body{
 }
 
 .time{
- font-size: clamp(28px, 3.5vw, 60px);
+ font-size: clamp(28px, 4.5vw, 75px);
  font-weight:900;
  color:var(--white);
  font-family:'Orbitron', sans-serif;
@@ -205,7 +242,7 @@ body{
 
  white-space:nowrap;
  display:inline-block;
- padding:0 4px;
+ padding:0 6px;
 }
 
 .countdown{
@@ -316,6 +353,9 @@ body{
 </head>
 <body>
 
+<audio id="ezanRegular" src="ezan.mp3" preload="auto"></audio>
+<audio id="ezanSabah" src="ezan_sabah.mp3" preload="auto"></audio>
+
 <div class="wrap">
 
 <div class="header">
@@ -341,6 +381,10 @@ body{
   <div id="clock" class="clock">--:--:--</div>
 
 </div>
+<div class="test-controls">
+  <button onclick="playEzan('Sabah')">EZAN ZA SABAH</button>
+  <button onclick="playEzan('Podne')">EZAN OSTALI</button>
+</div>
 
 <div id="grid" class="grid"></div>
 
@@ -362,18 +406,6 @@ const HADISI = [
   "Allah voli kada neko od vas radi posao da ga uradi savršeno.",
   "Ko olakša bratu muslimanu, Allah će njemu olakšati."
 ];
-
-let lastPlayed = null;
-
-let audioCtx = null;
-
-document.addEventListener("click", () => {
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  audioCtx.resume();
-});
-
 
 const VAKTIJA = {
 "2026-01-01":["05:40","07:18","11:51","13:58","16:22","17:49"],
@@ -755,6 +787,25 @@ const VAKTIJA = {
 
 };
 
+let lastPlayed = null;
+let isMuted = false;
+
+function playEzan(vakatName){
+
+  if(isMuted) return;
+
+  let audio;
+
+  if(vakatName === "Sabah"){
+    audio = document.getElementById("ezanSabah");
+  } else {
+    audio = document.getElementById("ezanRegular");
+  }
+
+  audio.currentTime = 0;
+  audio.play().catch(()=>{});
+}
+
 function pad(n){return n.toString().padStart(2,"0");}
 
 function formatTime(d){
@@ -829,6 +880,24 @@ function updateDate(){
  document.getElementById("hijri").innerText =
   h.day + ". " + hijriMonths[h.month-1] + " " + h.year + ".";
 }
+
+// Aktivacija audio dozvole (jednom)
+document.addEventListener("click", function enableAudio(){
+
+  const a1 = document.getElementById("ezanRegular");
+  const a2 = document.getElementById("ezanSabah");
+
+  [a1, a2].forEach(a=>{
+    if(!a) return;
+
+    a.play().then(()=>{
+      a.pause();
+      a.currentTime = 0;
+    }).catch(()=>{});
+  });
+
+  document.removeEventListener("click", enableAudio);
+});
 
 
 /* GRID */
@@ -907,9 +976,10 @@ function update(){
  let diff=Math.max(0, Math.floor((next.date-now)/1000));
 
   // 🔔 Kad nastupi vakat (tačno u sekundi)
-if(diff === 0 && lastPlayed !== next.name){
-  playBeep();
-  setTimeout(playBeep, 2000);
+if(diff <= 0 && lastPlayed !== next.name){
+ 
+playEzan(next.name);
+
   lastPlayed = next.name;
 
   let idxNext = NAMES.indexOf(next.name);
@@ -974,42 +1044,10 @@ function rotateHadis(){
 setInterval(rotateHadis, 30000); // svakih 30 sekundi
 rotateHadis();
 
-function playBeep(){
-
- if(!audioCtx) return;
-
- audioCtx.resume();
-
- const now = audioCtx.currentTime;
-
- function tone(freq, start, duration){
-   const osc = audioCtx.createOscillator();
-   const gain = audioCtx.createGain();
-
-   osc.connect(gain);
-   gain.connect(audioCtx.destination);
-
-   osc.type = "sine";
-   osc.frequency.value = freq;
-
-   gain.gain.setValueAtTime(0, start);
-   gain.gain.linearRampToValueAtTime(0.6, start + 0.05); // brzo pojačanje
-   gain.gain.linearRampToValueAtTime(0, start + duration); // fade out
-
-   osc.start(start);
-   osc.stop(start + duration);
- }
-
- // DING
- tone(1000, now, 0.6);
-
- // DONG (malo niži ton)
- tone(700, now + 0.7, 0.8);
-}
-
 buildGrid();
 update();
 setInterval(update,1000);
+
 </script>
 
 </body>
