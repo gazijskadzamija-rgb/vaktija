@@ -351,7 +351,32 @@ body{
   box-shadow:0 0 15px red;
 }
 
+/* =========================
+   RAMAZANSKI STIL (minimalni)
+========================= */
 
+body.ramadan{
+  background: radial-gradient(circle at top, #0f3b2e 0%, #061a14 70%);
+}
+
+body.ramadan .card{
+  border: 2px solid #c9a227;
+  box-shadow: 0 0 18px rgba(201,162,39,0.35);
+}
+
+body.ramadan .next{
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 25px rgba(255,215,0,0.5);
+}
+
+.ramadan-banner{
+  font-size: 26px;
+  letter-spacing: 3px;
+  color: #e6c65c;
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
 
 </style>
 </head>
@@ -381,7 +406,9 @@ body{
     <div id="greg" class="greg"></div>
     <div id="hijri" class="hijri"></div>
   </div>
-
+ <div id="ramadanText" class="ramadan-banner" style="display:none;">
+  🌙 RAMAZAN MUBAREK
+</div>
   <div id="clock" class="clock">--:--:--</div>
 
 </div>
@@ -804,11 +831,14 @@ const VAKTIJA = {
 "2026-12-31":["05:39","07:17","11:50","13:57","16:20","17:47"]
 
 };
-
+// RUČNI OFFSET ZA HIDŽRETSKI DATUM (BiH)
+const HIJRI_OFFSET = -1; 
 let lastPlayed = null;
 let isMuted = false;
 
 function playEzan(vakatName){
+
+  if(vakatName === "Izlazak Sunca") return;
 
   if(isMuted) return;
 
@@ -866,6 +896,25 @@ function updateDate(){
 
  const now = new Date();
 
+ // --- AKŠAM LOGIKA (islamski dan počinje sa akšamom) ---
+let islamicDate = new Date(now);
+
+const key = getDateKey(now);
+const data = VAKTIJA[key];
+
+if(data){
+
+  const akshamTime = data[4]; // Akšam je 5. u nizu
+  const [akHour, akMin] = akshamTime.split(":").map(Number);
+
+  if(
+    now.getHours() > akHour ||
+    (now.getHours() === akHour && now.getMinutes() >= akMin)
+  ){
+    islamicDate.setDate(islamicDate.getDate() + 1);
+  }
+}
+
  const mjeseci = [
   "januar","februar","mart","april","maj","juni",
   "juli","august","septembar","oktobar","novembar","decembar"
@@ -912,8 +961,27 @@ function updateDate(){
   "Šaban","Ramazan","Ševval","Zul-kade","Zul-hidždže"
  ];
 
- const h = gregToHijri(now);
+ const h = gregToHijri(islamicDate);
+// Aktivacija Ramazanskog stila
+if(h.month === 9){
+  document.body.classList.add("ramadan");
+  document.getElementById("ramadanText").style.display = "block";
+}else{
+  document.body.classList.remove("ramadan");
+  document.getElementById("ramadanText").style.display = "none";
+}
+// primjena ručnog offseta
+h.day += HIJRI_OFFSET;
 
+// korekcija ako ode ispod 1
+if(h.day < 1){
+  h.month -= 1;
+  if(h.month < 1){
+    h.month = 12;
+    h.year -= 1;
+  }
+  h.day = 30; // dovoljno za ±1
+}
  document.getElementById("hijri").innerText =
   h.day + ". " + hijriMonths[h.month-1] + " " + h.year + ".";
 }
@@ -960,6 +1028,8 @@ function buildGrid(){
 function update(){
 
  const now=new Date();
+
+
 
  document.getElementById("clock").innerText=formatTime(now);
 
@@ -1085,7 +1155,7 @@ rotateHadis();
 buildGrid();
 update();
 setInterval(update,1000);
-
+document.body.classList.add("rotated");
 </script>
 
 </body>
