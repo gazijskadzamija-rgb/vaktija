@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vaktija Srebrenik</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Noto+Naskh+Arabic:wght@700&display=swap" rel="stylesheet">
 
 <style>
 :root{
@@ -378,6 +379,193 @@ body.ramadan .next{
   font-weight: 600;
 }
 
+.clock-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between; /* 🔥 KLJUČNO */
+  width:100%;
+  padding:0 300px; /* razmak od ivica ekrana */
+  margin-top:10px;
+}
+/* ARAPSKA KALIGRAFIJA */
+.side-text{
+  font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+  font-size:clamp(45px,7vw,130px);
+  color:#d4af37;
+  direction:rtl;
+  line-height:1;
+
+  /* 🔥 3D GOLD EFEKAT */
+  text-shadow:
+    1px 1px 0 #b8962e,
+    2px 2px 0 #a3831f,
+    3px 3px 0 #8c6f18,
+    0 0 10px rgba(212,175,55,0.9),
+    0 0 30px rgba(212,175,55,0.7),
+    0 0 60px rgba(212,175,55,0.5);
+
+  transition:all 0.3s ease;
+}
+
+/* Allah malo veći */
+.side-text.right{
+  font-size:clamp(55px,7.5vw,150px);
+}
+
+/* hover efekat */
+.side-text:hover{
+  transform:scale(1.1);
+}
+
+/* ✨ stalni lagani glow */
+.side-text{
+  animation:goldGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes goldGlow{
+  from{
+    text-shadow:
+      1px 1px 0 #b8962e,
+      2px 2px 0 #a3831f,
+      0 0 10px rgba(212,175,55,0.6),
+      0 0 25px rgba(212,175,55,0.4);
+  }
+  to{
+    text-shadow:
+      1px 1px 0 #b8962e,
+      2px 2px 0 #a3831f,
+      3px 3px 0 #8c6f18,
+      0 0 25px rgba(212,175,55,1),
+      0 0 60px rgba(212,175,55,0.8),
+      0 0 100px rgba(212,175,55,0.6);
+  }
+}
+
+/* 🔊 PULSIRANJE KAD NASTUPI NAMAZ */
+.side-text.active-ezan{
+  animation:ezanPulse 1s infinite;
+}
+
+@keyframes ezanPulse{
+  0%{
+    transform:scale(1);
+    text-shadow:0 0 10px #00ff99;
+  }
+  50%{
+    transform:scale(1.15);
+    text-shadow:
+      0 0 30px #00ff99,
+      0 0 80px #00ff99;
+  }
+  100%{
+    transform:scale(1);
+    text-shadow:0 0 10px #00ff99;
+  }
+}
+
+/* 🌙 RAMAZAN MODE (jači sjaj) */
+body.ramadan .side-text{
+  color:#ffd700;
+
+  text-shadow:
+    1px 1px 0 #c9a227,
+    2px 2px 0 #a8891f,
+    0 0 20px #ffd700,
+    0 0 50px #ffd700,
+    0 0 100px rgba(255,215,0,0.7);
+}
+
+/* mobile */
+@media(max-width:700px){
+  .clock-wrap{
+    gap:15px;
+  }
+
+  .side-text{
+    font-size:35px;
+  }
+}
+
+.bajram-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:radial-gradient(circle, rgba(0,0,0,0.9), rgba(0,0,0,1));
+  
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 1s ease;
+}
+
+/* aktivno stanje */
+.bajram-overlay.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* sadržaj */
+.bajram-content{
+  text-align:center;
+  color:#ffd700;
+  animation:fadeIn 2s ease;
+}
+
+.bajram-title{
+  font-size:clamp(45px,6vw,110px);
+  font-weight:900;
+  letter-spacing:2px;
+
+  color:#ffd700;
+
+  /* 🔥 TAMNA SJENA + BLAGI GLOW */
+  text-shadow:
+    0 2px 4px rgba(0,0,0,0.8),
+    0 0 10px rgba(255,215,0,0.6);
+
+  /* lagani gradient ali bez pretjerivanja */
+  background:linear-gradient(45deg, #ffd700, #fff3b0);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.bajram-sub{
+  margin-top:20px;
+  font-size:clamp(34px,4vw,60px);
+  color:#ffffff;
+
+  text-shadow:
+    0 2px 5px rgba(0,0,0,0.9);
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(0.9);}
+  to{opacity:1; transform:scale(1);}
+}
+
+.bajram-arabic{
+  font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+  font-size:clamp(35px,6vw,70px);
+  margin-top:40px;
+  color:#ffd700;
+  direction:rtl;
+
+  text-shadow:
+    0 2px 4px rgba(0,0,0,0.9),
+    0 0 12px rgba(255,215,0,0.5);
+}
+
+.bajram-content{
+  background:rgba(0,0,0,0.35);
+  padding:30px 50px;
+  border-radius:20px;
+}
+
 </style>
 </head>
 <body>
@@ -409,7 +597,17 @@ body.ramadan .next{
  <div id="ramadanText" class="ramadan-banner" style="display:none;">
   🌙 RAMAZAN MUBAREK
 </div>
+  <div class="clock-wrap">
+
+  <div id="muhamedText" class="side-text left">
+    مُحَمَّدٌ
+  </div>
+
   <div id="clock" class="clock">--:--:--</div>
+
+  <div id="allahText" class="side-text right">
+    ٱللَّٰه
+  </div>
 
 </div>
 <div class="test-controls">
@@ -425,6 +623,18 @@ body.ramadan .next{
 <div id="hadisBox" class="hadis"></div>
 </div>
 
+</div>
+
+<div id="bajramOverlay" class="bajram-overlay">
+  <div class="bajram-content">
+    <div class="bajram-title">BAJRAM ŠERIF MUBAREK OLSUN</div>
+
+<div class="bajram-arabic">عِيدُكُمْ مُبَارَك</div>
+
+<div class="bajram-sub">
+  Neka vam Allah podari zdravlje, sreću i bereket<br>
+  i primi vaše ibadete
+</div>
 </div>
 
 <script>
@@ -832,7 +1042,7 @@ const VAKTIJA = {
 
 };
 // RUČNI OFFSET ZA HIDŽRETSKI DATUM (BiH)
-const HIJRI_OFFSET = -3; 
+const HIJRI_OFFSET = -2; 
 let lastPlayed = null;
 let isMuted = false;
 
@@ -1156,6 +1366,46 @@ buildGrid();
 update();
 setInterval(update,1000);
 document.body.classList.add("rotated");
+
+function isBajram(){
+  // RUČNO PODESI DATUME (najsigurnije)
+  const today = new Date().toISOString().slice(0,10);
+
+  const bajramDates = [
+    "2026-03-19", // RAMAZANSKI BAJRAM (1. dan)
+    "2026-03-20",
+    "2026-03-21",
+    "2026-03-22",
+
+    "2026-05-27", // KURBAN BAJRAM
+    "2026-05-28",
+    "2026-05-29"
+  ];
+
+  return bajramDates.includes(today);
+}
+
+if(isBajram()){
+  document.getElementById("bajramOverlay").classList.add("show");
+}
+
+if(isBajram()){
+  const el = document.getElementById("bajramOverlay");
+
+  function showBajram(){
+    el.classList.add("show");
+
+    setTimeout(()=>{
+      el.classList.remove("show");
+    }, 10000);
+  }
+
+  // odmah prikaži
+  showBajram();
+
+  // ponavljaj svakih 5 minuta
+  setInterval(showBajram, 120000);
+}
 </script>
 
 </body>
